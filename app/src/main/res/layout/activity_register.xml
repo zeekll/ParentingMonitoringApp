@@ -1,133 +1,178 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/bg_lavender">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="32dp">
+        android:padding="20dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Parent Registration"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp"/>
-
-        <EditText
-            android:id="@+id/etFullName"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Parent Full Name"
-            android:inputType="textPersonName"/>
+            android:orientation="vertical"
+            android:background="@drawable/bg_rounded_card"
+            android:padding="24dp">
 
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Parent Gmail Address"
-            android:inputType="textEmailAddress"
-            android:layout_marginTop="12dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Parent Registration"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_dark"
+                android:layout_marginBottom="16dp"/>
 
-        <EditText
-            android:id="@+id/etPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Parent Password"
-            android:inputType="textPassword"
-            android:layout_marginTop="12dp"/>
+            <EditText
+                android:id="@+id/etFullName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Parent Full Name"
+                android:inputType="textPersonName"
+                android:background="@drawable/bg_rounded_input"
+                android:padding="14dp"
+                android:textColor="@color/text_dark"/>
 
-        <EditText
-            android:id="@+id/etConfirmPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Confirm Parent Password"
-            android:inputType="textPassword"
-            android:layout_marginTop="12dp"/>
+            <EditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Parent Gmail Address"
+                android:inputType="textEmailAddress"
+                android:background="@drawable/bg_rounded_input"
+                android:padding="14dp"
+                android:textColor="@color/text_dark"
+                android:layout_marginTop="12dp"/>
 
-        <EditText
-            android:id="@+id/etStudentId"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Student ID (e.g. 25-3131)"
-            android:inputType="text"
-            android:layout_marginTop="20dp"/>
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Parent Password"
+                android:inputType="textPassword"
+                android:background="@drawable/bg_rounded_input"
+                android:padding="14dp"
+                android:textColor="@color/text_dark"
+                android:layout_marginTop="12dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Course"
-            android:layout_marginTop="12dp"/>
-        <Spinner
-            android:id="@+id/spinnerCourse"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            <EditText
+                android:id="@+id/etConfirmPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Confirm Parent Password"
+                android:inputType="textPassword"
+                android:background="@drawable/bg_rounded_input"
+                android:padding="14dp"
+                android:textColor="@color/text_dark"
+                android:layout_marginTop="12dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Section"
-            android:layout_marginTop="12dp"/>
-        <Spinner
-            android:id="@+id/spinnerSection"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            <EditText
+                android:id="@+id/etStudentId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Student ID (e.g. 25-3131)"
+                android:inputType="text"
+                android:background="@drawable/bg_rounded_input"
+                android:padding="14dp"
+                android:textColor="@color/text_dark"
+                android:layout_marginTop="20dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Student Login Details (para sa phone ng anak)"
-            android:textStyle="bold"
-            android:layout_marginTop="20dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Course"
+                android:textColor="@color/text_muted"
+                android:layout_marginTop="14dp"/>
+            <Spinner
+                android:id="@+id/spinnerCourse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_rounded_input"
+                android:padding="10dp"/>
 
-        <EditText
-            android:id="@+id/etStudentEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Student Email (kahit anong valid email)"
-            android:inputType="textEmailAddress"
-            android:layout_marginTop="8dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Section"
+                android:textColor="@color/text_muted"
+                android:layout_marginTop="12dp"/>
+            <Spinner
+                android:id="@+id/spinnerSection"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_rounded_input"
+                android:padding="10dp"/>
 
-        <EditText
-            android:id="@+id/etStudentPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Student Password"
-            android:inputType="textPassword"
-            android:layout_marginTop="12dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Student Login Details (para sa phone ng anak)"
+                android:textStyle="bold"
+                android:textColor="@color/text_dark"
+                android:layout_marginTop="20dp"/>
 
-        <Button
-            android:id="@+id/btnRegister"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Register"
-            android:layout_marginTop="24dp"/>
+            <EditText
+                android:id="@+id/etStudentEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Student Email (kahit anong valid email)"
+                android:inputType="textEmailAddress"
+                android:background="@drawable/bg_rounded_input"
+                android:padding="14dp"
+                android:textColor="@color/text_dark"
+                android:layout_marginTop="8dp"/>
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:visibility="gone"/>
+            <EditText
+                android:id="@+id/etStudentPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Student Password"
+                android:inputType="textPassword"
+                android:background="@drawable/bg_rounded_input"
+                android:padding="14dp"
+                android:textColor="@color/text_dark"
+                android:layout_marginTop="12dp"/>
 
-        <TextView
-            android:id="@+id/tvError"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="#D32F2F"
-            android:layout_marginTop="12dp"/>
+            <Button
+                android:id="@+id/btnRegister"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Register"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:background="@drawable/bg_button_primary"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:layout_marginTop="24dp"/>
 
-        <TextView
-            android:id="@+id/tvGoToLogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Already have an account? Login"
-            android:textColor="#1565C0"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center"/>
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:visibility="gone"/>
 
+            <TextView
+                android:id="@+id/tvError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/danger"
+                android:layout_marginTop="12dp"/>
+
+            <TextView
+                android:id="@+id/tvGoToLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Already have an account? Login"
+                android:textColor="@color/primary_purple"
+                android:textStyle="bold"
+                android:layout_marginTop="20dp"
+                android:layout_gravity="center"/>
+
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

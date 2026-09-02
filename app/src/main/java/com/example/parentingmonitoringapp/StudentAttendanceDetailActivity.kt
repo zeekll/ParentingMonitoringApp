@@ -78,7 +78,7 @@ class StudentAttendanceDetailActivity : AppCompatActivity() {
 
                         if (type == "IN") {
                             lastInTimestamp = ts
-                            addRecordRow("🟢 TIME IN", timeText, "#2E7D32")
+                            addRecordRow("🟢 TIME IN", timeText, "#2FD3A6")
                         } else {
                             // Prefer the duration stored on the record; fall back to pairing with the last IN seen
                             var durationMinutes = doc.getLong("durationMinutes")
@@ -86,7 +86,7 @@ class StudentAttendanceDetailActivity : AppCompatActivity() {
                                 durationMinutes = (ts.seconds - lastInTimestamp.seconds) / 60
                             }
                             val durationText = durationMinutes?.let { formatDuration(it) } ?: ""
-                            addRecordRow("🔴 TIME OUT", "$timeText  $durationText", "#D32F2F")
+                            addRecordRow("🔴 TIME OUT", "$timeText  $durationText", "#E5484D")
                         }
                     }
                 }
@@ -108,6 +108,7 @@ class StudentAttendanceDetailActivity : AppCompatActivity() {
             text = dateText
             setTypeface(typeface, android.graphics.Typeface.BOLD)
             textSize = 16f
+            setTextColor(Color.parseColor("#22223B"))
             setPadding(0, 24, 0, 8)
         }
         recordsContainer.addView(tv)
@@ -116,11 +117,11 @@ class StudentAttendanceDetailActivity : AppCompatActivity() {
     private fun addRecordRow(label: String, timeText: String, colorHex: String) {
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            setPadding(16, 16, 16, 16)
-            setBackgroundColor(Color.parseColor("#F5F5F5"))
+            setPadding(20, 20, 20, 20)
+            setBackgroundColor(Color.parseColor("#F6F4FE"))
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = 6 }
+            ).apply { topMargin = 8 }
         }
         val tvLabel = TextView(this).apply {
             text = label
@@ -131,7 +132,7 @@ class StudentAttendanceDetailActivity : AppCompatActivity() {
         val tvTime = TextView(this).apply {
             text = timeText
             textSize = 13f
-            setTextColor(Color.parseColor("#555555"))
+            setTextColor(Color.parseColor("#6B7280"))
         }
         row.addView(tvLabel)
         row.addView(tvTime)

@@ -2,6 +2,13 @@
 <resources>
 
     <style name="Theme.ParentingMonitoringApp" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <!-- keep any existing <item> lines inside, don't delete them -->
+        <item name="colorPrimary">@color/primary_purple</item>
+        <item name="colorPrimaryDark">@color/primary_purple_dark</item>
+        <item name="colorAccent">@color/primary_teal</item>
+        <item name="android:statusBarColor">@color/primary_purple_dark</item>
+        <item name="android:windowBackground">@color/bg_mint</item>
+        <item name="colorPrimary">@color/indigo_500</item>
+        <item name="colorPrimaryDark">@color/indigo_700</item>
+        <item name="colorAccent">@color/indigo_500</item>
     </style>
 </resources>

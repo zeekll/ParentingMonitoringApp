@@ -73,6 +73,10 @@ class AttendanceRecordsActivity : AppCompatActivity() {
                     }
                     override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
                 }
+
+                // Setting the initial adapters above happened before these listeners were attached,
+                // so it won't have fired loadStudents() on its own — trigger it once manually here.
+                loadStudents()
             }
             .addOnFailureListener {
                 tvStatus.text = "Failed to load courses. Check your internet connection."
@@ -119,11 +123,12 @@ class AttendanceRecordsActivity : AppCompatActivity() {
         return TextView(this).apply {
             text = if (studentName != null) "$studentName ($studentId)" else studentId
             textSize = 15f
-            setPadding(24, 24, 24, 24)
-            setBackgroundColor(Color.parseColor("#F5F5F5"))
+            setTextColor(Color.parseColor("#22223B"))
+            setPadding(28, 28, 28, 28)
+            setBackgroundColor(Color.parseColor("#F6F4FE"))
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = 8 }
+            ).apply { topMargin = 10 }
             setOnClickListener {
                 val intent = Intent(this@AttendanceRecordsActivity, StudentAttendanceDetailActivity::class.java)
                 intent.putExtra("studentId", studentId)

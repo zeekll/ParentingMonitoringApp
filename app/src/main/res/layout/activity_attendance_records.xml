@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:background="@color/bg_mint"
+    android:padding="20dp">
 
     <TextView
         android:layout_width="wrap_content"
@@ -11,31 +12,39 @@
         android:text="View Attendance"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="@color/text_dark"
         android:layout_marginBottom="12dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Course"/>
+        android:text="Course"
+        android:textColor="@color/text_muted"/>
     <Spinner
         android:id="@+id/spinnerCourse"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_rounded_input"
+        android:padding="10dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Section"
+        android:textColor="@color/text_muted"
         android:layout_marginTop="8dp"/>
     <Spinner
         android:id="@+id/spinnerSection"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_rounded_input"
+        android:padding="10dp"/>
 
     <TextView
         android:id="@+id/tvStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/text_muted"
         android:layout_marginTop="16dp"/>
 
     <ScrollView

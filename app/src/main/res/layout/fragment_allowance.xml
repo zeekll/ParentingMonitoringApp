@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/bg_mint">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,6 +16,7 @@
             android:text="Student Allowance"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:textColor="@color/text_dark"
             android:layout_marginBottom="8dp"/>
 
         <TextView
@@ -23,6 +25,7 @@
             android:layout_height="wrap_content"
             android:text="Loading..."
             android:textSize="15sp"
+            android:textColor="@color/text_dark"
             android:layout_marginBottom="12dp"/>
 
         <EditText
@@ -30,14 +33,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Set allowance amount (e.g. 100.00)"
-            android:inputType="numberDecimal"/>
+            android:inputType="numberDecimal"
+            android:background="@drawable/bg_rounded_input"
+            android:padding="14dp"
+            android:textColor="@color/text_dark"/>
 
         <Button
             android:id="@+id/btnSaveAllowance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Save Allowance"
-            android:backgroundTint="#2E7D32"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:background="@drawable/bg_button_teal"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
             android:layout_marginTop="8dp"/>
 
         <TextView
@@ -52,6 +62,7 @@
             android:text="Expense Notices"
             android:textSize="18sp"
             android:textStyle="bold"
+            android:textColor="@color/text_dark"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="8dp"/>
 
@@ -60,6 +71,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Loading..."
+            android:textColor="@color/text_muted"
             android:layout_marginBottom="8dp"/>
 
         <LinearLayout

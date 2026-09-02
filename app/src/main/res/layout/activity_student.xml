@@ -4,29 +4,46 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="32dp">
+    android:background="@color/bg_mint"
+    android:padding="24dp">
 
-    <TextView
-        android:id="@+id/tvStatus"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Student Dashboard"
-        android:textSize="20sp"
-        android:textStyle="bold"/>
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="@drawable/bg_rounded_card"
+        android:padding="28dp">
 
-    <TextView
-        android:id="@+id/tvLocationStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Location tracking: Not started"
-        android:textSize="14sp"
-        android:layout_marginTop="16dp"/>
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Student Dashboard"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_dark"/>
 
-    <Button
-        android:id="@+id/btnEnableTracking"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Enable Location Tracking"
-        android:layout_marginTop="24dp"/>
+        <TextView
+            android:id="@+id/tvLocationStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Location tracking: Not started"
+            android:textSize="14sp"
+            android:textColor="@color/text_muted"
+            android:layout_marginTop="16dp"/>
 
+        <Button
+            android:id="@+id/btnEnableTracking"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Enable Location Tracking"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:background="@drawable/bg_button_primary"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:layout_marginTop="24dp"/>
+
+    </LinearLayout>
 </LinearLayout>

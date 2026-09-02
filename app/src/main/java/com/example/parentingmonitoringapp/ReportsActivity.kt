@@ -49,6 +49,7 @@ class ReportsActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnAttendance).setOnClickListener { loadAttendance() }
         findViewById<Button>(R.id.btnExams).setOnClickListener { loadExams() }
         findViewById<Button>(R.id.btnAllowance).setOnClickListener { loadAllowance() }
+        findViewById<Button>(R.id.btnAbsences).setOnClickListener { loadAbsences() }
 
         loadCourses()
     }
@@ -293,6 +294,144 @@ class ReportsActivity : AppCompatActivity() {
             }
     }
 
+    // ---------- Absences ----------
+    private fun loadAbsences() {
+        val course = selectedCourse()
+        val section = selectedSection()
+
+        if (course == ALL_COURSES || section == ALL_SECTIONS) {
+            startLoading("absences")
+            finishLoading("Please select a specific Course and Section for absence tracking.")
+            return
+        }
+
+        startLoading("absences")
+        val scheduleId = "${course}_$section"
+
+        db.collection("section_schedule").document(scheduleId).get()
+            .addOnSuccessListener { doc ->
+                val days = (doc.get("days") as? List<*>)?.mapNotNull { it?.toString() } ?: emptyList()
+                if (days.isEmpty()) {
+                    finishLoading("No schedule set yet for $course - $section.")
+                    showScheduleSetup(scheduleId, course, section)
+                } else {
+                    finishLoading("Absences for $course - $section (${getMonthName()})")
+                    computeAbsences(course, section, days)
+                }
+            }
+            .addOnFailureListener {
+                finishLoading("Failed to load schedule: ${it.localizedMessage}")
+            }
+    }
+
+    private val weekdayLabels = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+
+    private fun showScheduleSetup(scheduleId: String, course: String, section: String) {
+        addSectionHeader("Set class days for $course - $section")
+
+        val checkboxes = mutableListOf<android.widget.CheckBox>()
+        for (label in weekdayLabels) {
+            val cb = android.widget.CheckBox(this).apply {
+                text = label
+                isChecked = label in listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+            }
+            checkboxes.add(cb)
+            resultsContainer.addView(cb)
+        }
+
+        val saveBtn = Button(this).apply {
+            text = "Save Schedule"
+            setTextColor(Color.parseColor("#FFFFFF"))
+            setBackgroundColor(Color.parseColor("#7B6EF6"))
+            setOnClickListener {
+                val selectedDays = checkboxes.filter { it.isChecked }.map { it.text.toString() }
+                if (selectedDays.isEmpty()) {
+                    tvStatus.text = "Please select at least one day."
+                    return@setOnClickListener
+                }
+                val data = hashMapOf(
+                    "course" to course,
+                    "section" to section,
+                    "days" to selectedDays
+                )
+                db.collection("section_schedule").document(scheduleId).set(data)
+                    .addOnSuccessListener {
+                        finishLoading("Schedule saved. Loading absences...")
+                        computeAbsences(course, section, selectedDays)
+                    }
+                    .addOnFailureListener {
+                        tvStatus.text = "Failed to save schedule: ${it.localizedMessage}"
+                    }
+            }
+        }
+        resultsContainer.addView(saveBtn)
+    }
+
+    private fun getMonthName(): String {
+        val sdf = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+        return sdf.format(java.util.Date())
+    }
+
+    private fun computeAbsences(course: String, section: String, scheduledDays: List<String>) {
+        getTargetStudents { students ->
+            if (students.isEmpty()) {
+                finishLoading("No students found in $course - $section.")
+                return@getTargetStudents
+            }
+            val studentIds = students.map { it.id }
+
+            // Build the list of school days from the 1st of this month up to today
+            val calendar = java.util.Calendar.getInstance()
+            calendar.set(java.util.Calendar.DAY_OF_MONTH, 1)
+            val today = java.util.Calendar.getInstance()
+            val weekdayFormat = SimpleDateFormat("EEE", Locale.ENGLISH)
+            val dateKeyFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+            val schoolDaysSoFar = mutableListOf<String>() // yyyy-MM-dd, only scheduled weekdays
+            while (!calendar.after(today)) {
+                val weekday = weekdayFormat.format(calendar.time)
+                if (weekday in scheduledDays) {
+                    schoolDaysSoFar.add(dateKeyFormat.format(calendar.time))
+                }
+                calendar.add(java.util.Calendar.DAY_OF_MONTH, 1)
+            }
+
+            if (schoolDaysSoFar.isEmpty()) {
+                finishLoading("No school days have occurred yet this month for $course - $section.")
+                return@getTargetStudents
+            }
+
+            db.collection("attendance")
+                .whereIn("studentId", studentIds.take(30))
+                .get()
+                .addOnSuccessListener { docs ->
+                    // Build a set of "studentId|yyyy-MM-dd" for every day a student had a TIME IN
+                    val presentSet = mutableSetOf<String>()
+                    for (attDoc in docs) {
+                        val sid = attDoc.getString("studentId") ?: continue
+                        val type = attDoc.getString("type") ?: continue
+                        val ts = attDoc.getTimestamp("timestamp") ?: continue
+                        if (type != "IN") continue
+                        val dateKey = dateKeyFormat.format(ts.toDate())
+                        presentSet.add("$sid|$dateKey")
+                    }
+
+                    finishLoading("Absences for $course - $section (${getMonthName()}) - ${schoolDaysSoFar.size} school day(s) so far")
+                    if (studentIds.size > 30) {
+                        addResultRow("Note", "Only first 30 students shown (Firestore query limit)")
+                    }
+
+                    for (sid in studentIds) {
+                        val absentCount = schoolDaysSoFar.count { dateKey -> "$sid|$dateKey" !in presentSet }
+                        addResultRow(sid, "$absentCount absence(s) / ${schoolDaysSoFar.size} school day(s)")
+                    }
+                }
+                .addOnFailureListener {
+                    finishLoading("Failed to load attendance: ${it.localizedMessage}")
+                }
+        }
+    }
+
     private fun formatTimestamp(timestamp: Timestamp?): String {
         if (timestamp == null) return ""
         val sdf = SimpleDateFormat("MMM dd, yyyy - hh:mm a", Locale.getDefault())
@@ -305,6 +444,7 @@ class ReportsActivity : AppCompatActivity() {
             this.text = text
             setTypeface(typeface, android.graphics.Typeface.BOLD)
             textSize = 15f
+            setTextColor(Color.parseColor("#22223B"))
             setPadding(0, 24, 0, 8)
         }
         resultsContainer.addView(tv)
@@ -313,21 +453,22 @@ class ReportsActivity : AppCompatActivity() {
     private fun addResultRow(left: String, right: String) {
         val row = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            setPadding(16, 12, 16, 12)
-            setBackgroundColor(Color.parseColor("#F5F5F5"))
+            setPadding(20, 16, 20, 16)
+            setBackgroundColor(Color.parseColor("#F6F4FE"))
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = 6 }
+            ).apply { topMargin = 8 }
         }
         val tvLeft = TextView(this).apply {
             text = left
             textSize = 13f
+            setTextColor(Color.parseColor("#22223B"))
             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
         }
         val tvRight = TextView(this).apply {
             text = right
             textSize = 13f
-            setTextColor(Color.parseColor("#555555"))
+            setTextColor(Color.parseColor("#6B7280"))
         }
         row.addView(tvLeft)
         row.addView(tvRight)

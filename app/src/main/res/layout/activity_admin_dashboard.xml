@@ -1,64 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp">
+    android:background="@color/bg_mint">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Admin Dashboard"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="24dp"/>
-
-    <Button
-        android:id="@+id/btnManageStudents"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Manage Students"
-        android:layout_marginTop="8dp"/>
+        android:orientation="vertical"
+        android:padding="24dp">
 
-    <Button
-        android:id="@+id/btnAttendance"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="View Attendance"
-        android:layout_marginTop="8dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Admin Dashboard"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_dark"
+            android:layout_marginBottom="20dp"/>
 
-    <Button
-        android:id="@+id/btnExamSchedule"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Exam Schedule"
-        android:layout_marginTop="8dp"/>
+        <Button
+            android:id="@+id/btnManageStudents"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Manage Students"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:background="@drawable/bg_button_primary"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:layout_marginTop="10dp"/>
 
-    <Button
-        android:id="@+id/btnMeetings"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Meetings / Fetch Grades"
-        android:layout_marginTop="8dp"/>
+        <Button
+            android:id="@+id/btnAttendance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="View Attendance"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:background="@drawable/bg_button_primary"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:layout_marginTop="10dp"/>
 
-    <Button
-        android:id="@+id/btnAllowance"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Send Expense Notice"
-        android:layout_marginTop="8dp"/>
+        <Button
+            android:id="@+id/btnExamSchedule"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Exam Schedule"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:background="@drawable/bg_button_primary"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:layout_marginTop="10dp"/>
 
-    <Button
-        android:id="@+id/btnReports"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Reports"
-        android:layout_marginTop="8dp"/>
-    <Button
-        android:id="@+id/btnTestEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="TEST: Send Sample Email"
-        android:backgroundTint="#FF9800"
-        android:layout_marginTop="24dp"/>
-</LinearLayout>
+        <Button
+            android:id="@+id/btnMeetings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Meetings / Fetch Grades"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:background="@drawable/bg_button_primary"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:layout_marginTop="10dp"/>
+
+        <Button
+            android:id="@+id/btnAllowance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Send Expense Notice"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:background="@drawable/bg_button_primary"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:layout_marginTop="10dp"/>
+
+        <Button
+            android:id="@+id/btnReports"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Reports"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:background="@drawable/bg_button_teal"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:layout_marginTop="10dp"/>
+
+        <Button
+            android:id="@+id/btnTestEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="TEST: Send Sample Email"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:background="@drawable/bg_button_danger"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:layout_marginTop="24dp"/>
+    </LinearLayout>
+</ScrollView>

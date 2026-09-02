@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:background="@color/bg_mint"
+    android:padding="20dp">
 
     <TextView
         android:layout_width="wrap_content"
@@ -11,26 +12,33 @@
         android:text="Reports"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="@color/text_dark"
         android:layout_marginBottom="12dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Course"/>
+        android:text="Course"
+        android:textColor="@color/text_muted"/>
     <Spinner
         android:id="@+id/spinnerCourse"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_rounded_input"
+        android:padding="10dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Section"
+        android:textColor="@color/text_muted"
         android:layout_marginTop="8dp"/>
     <Spinner
         android:id="@+id/spinnerSection"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_rounded_input"
+        android:padding="10dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,6 +53,8 @@
             android:layout_weight="1"
             android:text="Roster"
             android:textSize="11sp"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_button_primary"
             android:layout_marginEnd="4dp"/>
 
         <Button
@@ -54,6 +64,8 @@
             android:layout_weight="1"
             android:text="Attendance"
             android:textSize="11sp"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_button_primary"
             android:layout_marginEnd="4dp"/>
 
         <Button
@@ -63,7 +75,15 @@
             android:layout_weight="1"
             android:text="Exams"
             android:textSize="11sp"
-            android:layout_marginEnd="4dp"/>
+            android:textColor="@color/white"
+            android:background="@drawable/bg_button_primary"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="6dp">
 
         <Button
             android:id="@+id/btnAllowance"
@@ -71,7 +91,20 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Allowance"
-            android:textSize="11sp"/>
+            android:textSize="11sp"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_button_teal"
+            android:layout_marginEnd="4dp"/>
+
+        <Button
+            android:id="@+id/btnAbsences"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Absences"
+            android:textSize="11sp"
+            android:textColor="@color/white"
+            android:background="@drawable/bg_button_teal"/>
     </LinearLayout>
 
     <ProgressBar
@@ -86,6 +119,7 @@
         android:id="@+id/tvStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/text_muted"
         android:layout_marginTop="12dp"/>
 
     <ScrollView

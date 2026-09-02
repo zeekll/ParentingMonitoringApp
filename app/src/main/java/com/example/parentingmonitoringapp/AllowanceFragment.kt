@@ -126,14 +126,14 @@ class AllowanceFragment : Fragment() {
         db.collection("allowance").document(sid).set(allowanceData)
             .addOnSuccessListener {
                 btnSaveAllowance.isEnabled = true
-                tvSaveStatus.setTextColor(Color.parseColor("#2E7D32"))
+                tvSaveStatus.setTextColor(Color.parseColor("#2FD3A6"))
                 tvSaveStatus.text = "Allowance saved."
                 etAllowanceAmount.text.clear()
                 loadCurrentAllowance(sid)
             }
             .addOnFailureListener {
                 btnSaveAllowance.isEnabled = true
-                tvSaveStatus.setTextColor(Color.parseColor("#D32F2F"))
+                tvSaveStatus.setTextColor(Color.parseColor("#E5484D"))
                 tvSaveStatus.text = "Failed to save: ${it.localizedMessage}"
             }
     }
@@ -175,27 +175,28 @@ class AllowanceFragment : Fragment() {
     private fun buildNoticeView(title: String, message: String, amount: Double, sentAt: Timestamp?): LinearLayout {
         val box = LinearLayout(requireContext()).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16)
-            setBackgroundColor(Color.parseColor("#F5F5F5"))
+            setPadding(20, 20, 20, 20)
+            background = androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.bg_rounded_row)
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { topMargin = 8 }
+            ).apply { topMargin = 10 }
         }
 
         val tvTitle = TextView(requireContext()).apply {
             text = if (amount > 0) "$title - ₱$amount" else title
             textSize = 15f
+            setTextColor(Color.parseColor("#22223B"))
             setTypeface(typeface, android.graphics.Typeface.BOLD)
         }
         val tvMessage = TextView(requireContext()).apply {
             text = message
             textSize = 13f
-            setTextColor(Color.parseColor("#555555"))
+            setTextColor(Color.parseColor("#6B7280"))
         }
         val tvDate = TextView(requireContext()).apply {
             text = formatTimestamp(sentAt)
             textSize = 11f
-            setTextColor(Color.parseColor("#888888"))
+            setTextColor(Color.parseColor("#9CA3AF"))
         }
 
         box.addView(tvTitle)
