@@ -1,40 +1,39 @@
 package com.example.parentingmonitoringapp
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.Spinner
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.button.MaterialButton
+import android.widget.ProgressBar
+import android.widget.TextView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
 
-    private lateinit var etFullName: EditText
-    private lateinit var etEmail: EditText
-    private lateinit var etPassword: EditText
-    private lateinit var etConfirmPassword: EditText
-    private lateinit var etStudentId: EditText
-    private lateinit var spinnerCourse: Spinner
-    private lateinit var spinnerSection: Spinner
-    private lateinit var etStudentEmail: EditText
-    private lateinit var etStudentPassword: EditText
-    private lateinit var btnRegister: Button
+    private lateinit var etFullName: TextInputEditText
+    private lateinit var etEmail: TextInputEditText
+    private lateinit var etPassword: TextInputEditText
+    private lateinit var etConfirmPassword: TextInputEditText
+    private lateinit var etStudentId: TextInputEditText
+    private lateinit var etStudentDob: TextInputEditText
+    private lateinit var btnRegister: MaterialButton
     private lateinit var progressBar: ProgressBar
     private lateinit var tvError: TextView
     private lateinit var tvGoToLogin: TextView
 
-    // course name -> list of sections
-    private val courseSectionsMap = mutableMapOf<String, List<String>>()
-    private val courseNames = mutableListOf<String>()
+    private val dobFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+    private var selectedDob: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,60 +47,56 @@ class RegisterActivity : AppCompatActivity() {
         etPassword = findViewById(R.id.etPassword)
         etConfirmPassword = findViewById(R.id.etConfirmPassword)
         etStudentId = findViewById(R.id.etStudentId)
-        spinnerCourse = findViewById(R.id.spinnerCourse)
-        spinnerSection = findViewById(R.id.spinnerSection)
-        etStudentEmail = findViewById(R.id.etStudentEmail)
-        etStudentPassword = findViewById(R.id.etStudentPassword)
+        etStudentDob = findViewById(R.id.etStudentDob)
         btnRegister = findViewById(R.id.btnRegister)
         progressBar = findViewById(R.id.progressBar)
         tvError = findViewById(R.id.tvError)
         tvGoToLogin = findViewById(R.id.tvGoToLogin)
 
+        etStudentDob.setOnClickListener { showDobPicker() }
         btnRegister.setOnClickListener { attemptRegister() }
         tvGoToLogin.setOnClickListener { finish() }
-
-        loadCourses()
     }
 
-    private fun loadCourses() {
-        db.collection("courses").get()
-            .addOnSuccessListener { docs ->
-                courseNames.clear()
-                courseSectionsMap.clear()
+    private fun showDobPicker() {
+        val cal = Calendar.getInstance()
+        // Default the picker to ~10 years ago, a reasonable starting point for a student's DOB.
+        cal.add(Calendar.YEAR, -10)
 
-                for (doc in docs) {
-                    val courseName = doc.getString("courseName") ?: doc.id
-                    val sectionsRaw = doc.get("sections")
-                    val sections: List<String> = when (sectionsRaw) {
-                        is List<*> -> sectionsRaw.mapNotNull { it?.toString()?.trim() }
-                        is String -> sectionsRaw.trim('[', ']').split(",").map { it.trim() }.filter { it.isNotEmpty() }
-                        else -> emptyList()
-                    }
-                    courseNames.add(courseName)
-                    courseSectionsMap[courseName] = sections
-                }
-
-                val courseAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, courseNames)
-                spinnerCourse.adapter = courseAdapter
-
-                updateSectionSpinner(courseNames.firstOrNull())
-
-                spinnerCourse.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
-                        updateSectionSpinner(courseNames.getOrNull(position))
-                    }
-                    override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
-                }
-            }
-            .addOnFailureListener {
-                tvError.text = "Failed to load courses. Check your internet connection."
-            }
+        val dialog = DatePickerDialog(
+            this,
+            { _, year, month, dayOfMonth ->
+                val picked = Calendar.getInstance()
+                picked.set(year, month, dayOfMonth)
+                selectedDob = dobFormat.format(picked.time)
+                etStudentDob.setText(
+                    SimpleDateFormat("MMM d, yyyy", Locale.US).format(picked.time)
+                )
+            },
+            cal.get(Calendar.YEAR),
+            cal.get(Calendar.MONTH),
+            cal.get(Calendar.DAY_OF_MONTH)
+        )
+        // A student can't be born in the future.
+        dialog.datePicker.maxDate = System.currentTimeMillis()
+        dialog.show()
     }
 
-    private fun updateSectionSpinner(courseName: String?) {
-        val sections = courseSectionsMap[courseName] ?: emptyList()
-        val sectionAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, sections)
-        spinnerSection.adapter = sectionAdapter
+    private fun showError(message: String) {
+        tvError.setTextColor(android.graphics.Color.parseColor("#D94B4B"))
+        tvError.text = message
+        tvError.visibility = View.VISIBLE
+    }
+
+    private fun showSuccess(message: String) {
+        tvError.setTextColor(android.graphics.Color.parseColor("#1F9D63"))
+        tvError.text = message
+        tvError.visibility = View.VISIBLE
+    }
+
+    private fun setLoading(isLoading: Boolean) {
+        progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        btnRegister.isEnabled = !isLoading
     }
 
     private fun attemptRegister() {
@@ -110,150 +105,150 @@ class RegisterActivity : AppCompatActivity() {
         val password = etPassword.text.toString().trim()
         val confirmPassword = etConfirmPassword.text.toString().trim()
         val studentId = etStudentId.text.toString().trim()
-        val selectedCourse = spinnerCourse.selectedItem?.toString() ?: ""
-        val selectedSection = spinnerSection.selectedItem?.toString() ?: ""
-        val studentEmail = etStudentEmail.text.toString().trim()
-        val studentPassword = etStudentPassword.text.toString().trim()
+        val studentDob = selectedDob
 
-        tvError.setTextColor(android.graphics.Color.parseColor("#D32F2F"))
-        tvError.text = ""
+        tvError.visibility = View.GONE
 
-        if (fullName.isEmpty() || email.isEmpty() || password.isEmpty() || studentId.isEmpty()
-            || studentEmail.isEmpty() || studentPassword.isEmpty()) {
-            tvError.text = "Please fill in all fields"
-            return
-        }
-        if (selectedCourse.isEmpty() || selectedSection.isEmpty()) {
-            tvError.text = "Please select a Course and Section"
+        // --- Validate parent input fields ---
+        if (fullName.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            showError("Please fill in all parent information fields.")
             return
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            tvError.text = "Please enter a valid parent email address"
+            showError("Please enter a valid email address.")
             return
         }
-        if (!email.endsWith("@gmail.com")) {
-            tvError.text = "Parent email must be a valid Gmail account (@gmail.com)"
-            return
-        }
-        if (!Patterns.EMAIL_ADDRESS.matcher(studentEmail).matches()) {
-            tvError.text = "Please enter a valid student email address"
-            return
-        }
-        if (email == studentEmail) {
-            tvError.text = "Parent and student email must be different"
-            return
-        }
-        if (password.length < 6 || studentPassword.length < 6) {
-            tvError.text = "Passwords must be at least 6 characters"
+        if (password.length < 6) {
+            showError("Password must be at least 6 characters.")
             return
         }
         if (password != confirmPassword) {
-            tvError.text = "Passwords do not match"
+            showError("Passwords do not match.")
             return
         }
 
-        progressBar.visibility = View.VISIBLE
-        btnRegister.isEnabled = false
+        // --- Validate student verification fields ---
+        if (studentId.isEmpty()) {
+            showError("Please enter the Student ID.")
+            return
+        }
+        if (studentDob.isEmpty()) {
+            showError("Please select the Student's Date of Birth.")
+            return
+        }
 
-        // Step 1: Verify Student ID exists AND its course/section match the selected ones
+        setLoading(true)
+        verifyStudentThenRegister(fullName, email, password, studentId, studentDob)
+    }
+
+    /**
+     * Verify the student record on the backend BEFORE creating any account or
+     * writing any data. This restricts account creation/linking to cases where
+     * verification actually succeeds.
+     */
+    private fun verifyStudentThenRegister(
+        fullName: String,
+        email: String,
+        password: String,
+        studentId: String,
+        studentDob: String
+    ) {
         db.collection("students").document(studentId).get()
             .addOnSuccessListener { doc ->
                 if (!doc.exists()) {
-                    progressBar.visibility = View.GONE
-                    btnRegister.isEnabled = true
-                    tvError.text = "Student ID not found. Please contact the school admin."
+                    setLoading(false)
+                    showError("Student ID not found. Please check the ID or contact the school admin.")
                     return@addOnSuccessListener
                 }
 
-                val actualCourse = doc.getString("course") ?: ""
-                val actualSection = doc.getString("section") ?: ""
-
-                if (actualCourse != selectedCourse || actualSection != selectedSection) {
-                    progressBar.visibility = View.GONE
-                    btnRegister.isEnabled = true
-                    tvError.text = "Course/Section does not match our records for this Student ID. Please double-check."
+                val recordDob = doc.getString("dob")?.trim().orEmpty()
+                if (recordDob.isEmpty() || recordDob != studentDob) {
+                    setLoading(false)
+                    showError("Student details do not match our records. Please double-check the ID and date of birth.")
                     return@addOnSuccessListener
                 }
 
-                createParentAccount(fullName, email, password, studentId, selectedCourse, selectedSection, studentEmail, studentPassword)
+                // Prevent linking a student that's already linked to a different parent.
+                val existingParentUid = doc.getString("parentUid")
+                if (!existingParentUid.isNullOrEmpty()) {
+                    setLoading(false)
+                    showError("This student is already linked to a parent account.")
+                    return@addOnSuccessListener
+                }
+
+                createParentAndLinkStudent(fullName, email, password, studentId)
             }
             .addOnFailureListener {
-                progressBar.visibility = View.GONE
-                btnRegister.isEnabled = true
-                tvError.text = "Unable to verify Student ID. Check your internet connection."
+                setLoading(false)
+                showError("Unable to verify student details. Check your internet connection and try again.")
             }
     }
 
-    private fun createParentAccount(
-        fullName: String, email: String, password: String,
-        studentId: String, course: String, section: String,
-        studentEmail: String, studentPassword: String
+    private fun createParentAndLinkStudent(
+        fullName: String,
+        email: String,
+        password: String,
+        studentId: String
     ) {
         auth.createUserWithEmailAndPassword(email, password)
-            .addOnSuccessListener { parentResult ->
-                val parentUid = parentResult.user?.uid ?: return@addOnSuccessListener
-                parentResult.user?.sendEmailVerification()
+            .addOnSuccessListener { result ->
+                val parentUid = result.user?.uid
+                if (parentUid == null) {
+                    setLoading(false)
+                    showError("Something went wrong creating your account. Please try again.")
+                    return@addOnSuccessListener
+                }
 
-                val parentMap = hashMapOf(
-                    "name" to fullName,
-                    "email" to email,
-                    "role" to "parent",
-                    "studentId" to studentId,
-                    "course" to course,
-                    "section" to section
-                )
-
-                db.collection("users").document(parentUid).set(parentMap)
-                    .addOnSuccessListener {
-                        createStudentAccount(parentUid, studentEmail, studentPassword, studentId, course, section)
-                    }
-                    .addOnFailureListener {
-                        progressBar.visibility = View.GONE
-                        btnRegister.isEnabled = true
-                        tvError.text = "Parent account created but failed to save profile. Contact admin."
-                    }
+                result.user?.sendEmailVerification()
+                linkParentToStudent(parentUid, fullName, email, studentId)
             }
             .addOnFailureListener { e ->
-                progressBar.visibility = View.GONE
-                btnRegister.isEnabled = true
-                tvError.text = "Parent account error: ${e.localizedMessage}"
+                setLoading(false)
+                showError(e.localizedMessage ?: "Unable to create account. Please try again.")
             }
     }
 
-    private fun createStudentAccount(
-        parentUid: String, studentEmail: String, studentPassword: String,
-        studentId: String, course: String, section: String
+    /**
+     * Writes the parent profile (role = parent) and the student's link back to
+     * that parent in a single atomic batch, so the two records can't end up
+     * out of sync (database integrity for the parent<->student link).
+     */
+    private fun linkParentToStudent(
+        parentUid: String,
+        fullName: String,
+        email: String,
+        studentId: String
     ) {
-        auth.createUserWithEmailAndPassword(studentEmail, studentPassword)
-            .addOnSuccessListener { studentResult ->
-                val studentUid = studentResult.user?.uid ?: return@addOnSuccessListener
+        val parentRef = db.collection("users").document(parentUid)
+        val studentRef = db.collection("students").document(studentId)
 
-                val studentMap = hashMapOf(
-                    "email" to studentEmail,
-                    "role" to "student",
-                    "studentId" to studentId,
-                    "course" to course,
-                    "section" to section,
-                    "parentUid" to parentUid
-                )
+        val parentData = hashMapOf(
+            "name" to fullName,
+            "email" to email,
+            "role" to "parent",
+            "studentId" to studentId,
+            "createdAt" to FieldValue.serverTimestamp()
+        )
 
-                db.collection("users").document(studentUid).set(studentMap)
-                    .addOnSuccessListener {
-                        progressBar.visibility = View.GONE
-                        auth.signOut()
-                        tvError.setTextColor(android.graphics.Color.parseColor("#2E7D32"))
-                        tvError.text = "Registration successful! Parent: please verify your Gmail. Student: you can log in directly."
-                    }
-                    .addOnFailureListener {
-                        progressBar.visibility = View.GONE
-                        btnRegister.isEnabled = true
-                        tvError.text = "Student account created but failed to save profile. Contact admin."
-                    }
+        val studentUpdate = hashMapOf<String, Any>(
+            "parentUid" to parentUid,
+            "linkedAt" to FieldValue.serverTimestamp()
+        )
+
+        db.runBatch { batch ->
+            batch.set(parentRef, parentData)
+            batch.update(studentRef, studentUpdate)
+        }
+            .addOnSuccessListener {
+                setLoading(false)
+                showSuccess("Account created and linked successfully! Please verify your email, then log in.")
+                auth.signOut()
             }
-            .addOnFailureListener { e ->
-                progressBar.visibility = View.GONE
-                btnRegister.isEnabled = true
-                tvError.text = "Student account error: ${e.localizedMessage}"
+            .addOnFailureListener {
+                setLoading(false)
+                // Account exists in Auth but the DB link failed - surface this clearly
+                // rather than leaving the person thinking everything succeeded.
+                showError("Account was created but linking to the student failed. Please contact support.")
             }
     }
 }

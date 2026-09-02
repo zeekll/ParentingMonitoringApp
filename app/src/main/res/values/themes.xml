@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.ParentingMonitoringApp" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="Theme.ParentingMonitoringApp" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/primary_purple</item>
         <item name="colorPrimaryDark">@color/primary_purple_dark</item>
         <item name="colorAccent">@color/primary_teal</item>

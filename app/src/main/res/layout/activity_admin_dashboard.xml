@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_mint">
+    android:background="@color/white"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -10,97 +12,491 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Admin Dashboard"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_dark"
-            android:layout_marginBottom="20dp"/>
-
-        <Button
-            android:id="@+id/btnManageStudents"
+        <!-- Header -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Manage Students"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:background="@drawable/bg_button_primary"
-            android:paddingTop="14dp"
-            android:paddingBottom="14dp"
-            android:layout_marginTop="10dp"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="24dp">
 
-        <Button
-            android:id="@+id/btnAttendance"
+            <ImageView
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/bg_logo_circle"
+                android:src="@drawable/ic_person"
+                android:padding="14dp"
+                android:contentDescription="@string/app_name" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="14dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvAdminName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Admin"
+                    android:textColor="@color/ink"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvWelcome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Welcome, Admin!"
+                    android:textColor="@color/ink_soft"
+                    android:textSize="13sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Stat cards -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="View Attendance"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:background="@drawable/bg_button_primary"
-            android:paddingTop="14dp"
-            android:paddingBottom="14dp"
-            android:layout_marginTop="10dp"/>
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
 
-        <Button
-            android:id="@+id/btnExamSchedule"
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_stat_indigo"
+                android:padding="14dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_group"
+                    android:tint="@color/indigo_500"
+                    android:contentDescription="Total Users" />
+
+                <TextView
+                    android:id="@+id/tvTotalUsers"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="—"
+                    android:textColor="@color/ink"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total Users"
+                    android:textColor="@color/ink_soft"
+                    android:textSize="11sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:orientation="vertical"
+                android:background="@drawable/bg_stat_green"
+                android:padding="14dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_badge"
+                    android:tint="@color/success"
+                    android:contentDescription="Total Students" />
+
+                <TextView
+                    android:id="@+id/tvTotalStudents"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="—"
+                    android:textColor="@color/ink"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total Students"
+                    android:textColor="@color/ink_soft"
+                    android:textSize="11sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:background="@drawable/bg_stat_red"
+                android:padding="14dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_warning"
+                    android:tint="@color/danger"
+                    android:contentDescription="Pending Issues" />
+
+                <TextView
+                    android:id="@+id/tvPendingIssues"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="—"
+                    android:textColor="@color/ink"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pending Issues"
+                    android:textColor="@color/ink_soft"
+                    android:textSize="11sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Module grid: row 1 -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Exam Schedule"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:background="@drawable/bg_button_primary"
-            android:paddingTop="14dp"
-            android:paddingBottom="14dp"
-            android:layout_marginTop="10dp"/>
+            android:orientation="horizontal"
+            android:layout_marginBottom="18dp">
 
-        <Button
-            android:id="@+id/btnMeetings"
+            <LinearLayout
+                android:id="@+id/btnManageUsers"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:backgroundTint="@color/indigo_100"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_group"
+                    android:tint="@color/indigo_500"
+                    android:contentDescription="Manage Users" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Manage\nUsers"
+                    android:textAlignment="center"
+                    android:textColor="@color/ink"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnManageStudents"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:backgroundTint="@color/success_bg"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_badge"
+                    android:tint="@color/success"
+                    android:contentDescription="Manage Students" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Manage\nStudents"
+                    android:textAlignment="center"
+                    android:textColor="@color/ink"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnManageParents"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:backgroundTint="@color/danger_bg"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_family"
+                    android:tint="@color/danger"
+                    android:contentDescription="Manage Parents" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Manage\nParents"
+                    android:textAlignment="center"
+                    android:textColor="@color/ink"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Module grid: row 2 -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Meetings / Fetch Grades"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:background="@drawable/bg_button_primary"
-            android:paddingTop="14dp"
-            android:paddingBottom="14dp"
-            android:layout_marginTop="10dp"/>
+            android:orientation="horizontal"
+            android:layout_marginBottom="18dp">
 
-        <Button
-            android:id="@+id/btnAllowance"
+            <LinearLayout
+                android:id="@+id/btnAttendance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:backgroundTint="@color/success_bg"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_calendar"
+                    android:tint="@color/success"
+                    android:contentDescription="Attendance" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Attendance"
+                    android:textAlignment="center"
+                    android:textColor="@color/ink"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnExamSchedule"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:backgroundTint="@color/success_bg"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_calendar"
+                    android:tint="@color/success"
+                    android:contentDescription="Exam Schedules" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Exam\nSchedules"
+                    android:textAlignment="center"
+                    android:textColor="@color/ink"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnGrades"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:backgroundTint="@color/success_bg"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_grade"
+                    android:tint="@color/success"
+                    android:contentDescription="Grades" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Grades"
+                    android:textAlignment="center"
+                    android:textColor="@color/ink"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Module grid: row 3 -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Send Expense Notice"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:background="@drawable/bg_button_primary"
-            android:paddingTop="14dp"
-            android:paddingBottom="14dp"
-            android:layout_marginTop="10dp"/>
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
 
-        <Button
-            android:id="@+id/btnReports"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Reports"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:background="@drawable/bg_button_teal"
-            android:paddingTop="14dp"
-            android:paddingBottom="14dp"
-            android:layout_marginTop="10dp"/>
+            <LinearLayout
+                android:id="@+id/btnAnnouncements"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
 
-        <Button
-            android:id="@+id/btnTestEmail"
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:backgroundTint="@color/indigo_100"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_announcement"
+                    android:tint="@color/indigo_500"
+                    android:contentDescription="Announcements" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Announce-\nments"
+                    android:textAlignment="center"
+                    android:textColor="@color/ink"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnNotifications"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:backgroundTint="@color/danger_bg"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_notification"
+                    android:tint="@color/danger"
+                    android:contentDescription="Notifications" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Notifications"
+                    android:textAlignment="center"
+                    android:textColor="@color/ink"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnSettings"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@drawable/bg_icon_circle"
+                    android:backgroundTint="@color/row_light"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_settings"
+                    android:tint="@color/ink_soft"
+                    android:contentDescription="Settings" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="Settings"
+                    android:textAlignment="center"
+                    android:textColor="@color/ink"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogout"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TEST: Send Sample Email"
-            android:textColor="@color/white"
+            android:layout_height="52dp"
+            android:text="Logout"
+            android:textAllCaps="false"
+            android:textColor="@color/danger"
+            android:textSize="15sp"
             android:textStyle="bold"
-            android:background="@drawable/bg_button_danger"
-            android:paddingTop="14dp"
-            android:paddingBottom="14dp"
-            android:layout_marginTop="24dp"/>
+            app:cornerRadius="12dp"
+            app:strokeColor="@color/danger" />
+
     </LinearLayout>
+
 </ScrollView>

@@ -21,4 +21,16 @@
     <color name="danger_bg">#FFFDECEC</color>
     <color name="success">#FF1F9D63</color>
     <color name="success_bg">#FFE9F9F0</color>
+
+    <!-- Core theme palette used across activities/layouts -->
+    <color name="primary_purple">#FF4F46E5</color>
+    <color name="primary_purple_dark">#FF322DA3</color>
+    <color name="primary_teal">#FF03DAC5</color>
+    <color name="bg_lavender">#FFF5F4FF</color>
+    <color name="bg_mint">#FFF5F4FF</color>
+    <color name="card_white">#FFFFFFFF</color>
+    <color name="row_light">#FFF7F7FC</color>
+    <color name="border_light">#FFE1DEFA</color>
+    <color name="text_dark">#FF1C1A3A</color>
+    <color name="text_muted">#FF5B5880</color>
 </resources>
