@@ -65,18 +65,27 @@ class AllowanceFragment : Fragment() {
 
         db.collection("users").document(uid).get()
             .addOnSuccessListener { userDoc ->
-                val sid = userDoc.getString("studentId")
+                val sid = ChildLinkStore.resolveSelectedStudentId(requireContext(), uid, userDoc)
                 if (sid == null) {
                     tvCurrentAllowance.text = "No linked student found."
                     tvNoticesStatus.text = ""
                     return@addOnSuccessListener
                 }
                 studentId = sid
-                course = userDoc.getString("course")
-                section = userDoc.getString("section")
 
-                loadCurrentAllowance(sid)
-                loadNotices(course, section)
+                db.collection("students").document(sid).get()
+                    .addOnSuccessListener { studentDoc ->
+                        if (!isAdded) return@addOnSuccessListener
+                        course = studentDoc.getString("course")
+                        section = studentDoc.getString("section")
+                        loadCurrentAllowance(sid)
+                        loadNotices(course, section)
+                    }
+                    .addOnFailureListener {
+                        if (!isAdded) return@addOnFailureListener
+                        loadCurrentAllowance(sid)
+                        tvNoticesStatus.text = "Unable to load child's course/section."
+                    }
             }
             .addOnFailureListener {
                 tvCurrentAllowance.text = "Failed to load profile: ${it.localizedMessage}"

@@ -49,7 +49,7 @@ class AttendanceFragment : Fragment() {
         // Step 1: kunin ang studentId na naka-link sa parent na ito
         db.collection("users").document(uid).get()
             .addOnSuccessListener { userDoc ->
-                val studentId = userDoc.getString("studentId")
+                val studentId = ChildLinkStore.resolveSelectedStudentId(requireContext(), uid, userDoc)
                 if (studentId == null) {
                     tvStatus.text = "No linked student found."
                     return@addOnSuccessListener

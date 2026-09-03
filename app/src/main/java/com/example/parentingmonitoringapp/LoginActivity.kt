@@ -205,6 +205,15 @@ class LoginActivity : AppCompatActivity() {
                                 return@postDelayed
                             }
 
+                            if (role == "parent" && ChildLinkStore.getLinkedStudentIds(doc).size > 1) {
+                                val intent = Intent(this, SelectChildActivity::class.java)
+                                intent.putExtra(SelectChildActivity.EXTRA_FROM_LOGIN, true)
+                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                startActivity(intent)
+                                finish()
+                                return@postDelayed
+                            }
+
                             val nextActivity = when (role) {
                                 "admin" -> AdminDashboardActivity::class.java
                                 "student" -> StudentActivity::class.java

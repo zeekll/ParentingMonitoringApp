@@ -227,6 +227,7 @@ class RegisterActivity : AppCompatActivity() {
             "email" to email,
             "role" to "parent",
             "studentId" to studentId,
+            "studentIds" to listOf(studentId),
             "createdAt" to FieldValue.serverTimestamp()
         )
 
