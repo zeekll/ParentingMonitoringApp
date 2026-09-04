@@ -40,6 +40,12 @@ class StudentActivity : AppCompatActivity() {
     private lateinit var tvStudentName: TextView
     private lateinit var tvStudentId: TextView
 
+    private lateinit var ivCampusStatusIcon: android.widget.ImageView
+    private lateinit var tvCampusStatusLabel: TextView
+    private lateinit var tvTimeInValue: TextView
+    private lateinit var tvTimeOutValue: TextView
+    private var attendanceListener: com.google.firebase.firestore.ListenerRegistration? = null
+
     private var locationCallback: LocationCallback? = null
     private var isTracking = false
 
@@ -72,6 +78,11 @@ class StudentActivity : AppCompatActivity() {
         tvStudentName = findViewById(R.id.tvStudentName)
         tvStudentId = findViewById(R.id.tvStudentId)
         tvLocationStatus = findViewById(R.id.tvLocationStatus)
+
+        ivCampusStatusIcon = findViewById(R.id.ivCampusStatusIcon)
+        tvCampusStatusLabel = findViewById(R.id.tvCampusStatusLabel)
+        tvTimeInValue = findViewById(R.id.tvTimeInValue)
+        tvTimeOutValue = findViewById(R.id.tvTimeOutValue)
 
         setupCard(R.id.cardProfile) { openOwnRecord(MyChildActivity::class.java, "My Profile") }
         setupCard(R.id.cardAttendance) { openOwnRecord(StudentAttendanceDetailActivity::class.java) }
@@ -128,6 +139,8 @@ class StudentActivity : AppCompatActivity() {
                 }
                 linkedStudentId = studentId
                 tvStudentId.text = "ID: $studentId"
+
+                startTodayAttendanceListener(studentId)
 
                 db.collection("students").document(studentId).get()
                     .addOnSuccessListener { studentDoc ->
@@ -245,11 +258,73 @@ class StudentActivity : AppCompatActivity() {
                 }
                 val distance = location.distanceTo(schoolLocation)
 
-                tvLocationStatus.text = if (distance <= radius) {
+                val isInside = distance <= radius
+
+                tvLocationStatus.text = if (isInside) {
                     "✅ INSIDE school area (${distance.toInt()}m) — Background tracking ON"
                 } else {
                     "🚶 OUTSIDE school area (${distance.toInt()}m) — Background tracking ON"
                 }
+
+                updateCampusStatusCard(isInside)
+            }
+    }
+
+    /** Updates the Campus Status card's label/icon to reflect current in/out state. */
+    private fun updateCampusStatusCard(isInside: Boolean) {
+        if (isInside) {
+            tvCampusStatusLabel.text = "🏫 ON CAMPUS"
+            tvCampusStatusLabel.setTextColor(ContextCompat.getColor(this, R.color.success))
+            ivCampusStatusIcon.backgroundTintList = ContextCompat.getColorStateList(this, R.color.success_bg)
+            ivCampusStatusIcon.setColorFilter(ContextCompat.getColor(this, R.color.success))
+        } else {
+            tvCampusStatusLabel.text = "🚶 OFF CAMPUS"
+            tvCampusStatusLabel.setTextColor(ContextCompat.getColor(this, R.color.danger))
+            ivCampusStatusIcon.backgroundTintList = ContextCompat.getColorStateList(this, R.color.danger_bg)
+            ivCampusStatusIcon.setColorFilter(ContextCompat.getColor(this, R.color.danger))
+        }
+    }
+
+    /**
+     * Listens in real time to today's attendance records for this student
+     * (written by [GeofenceBroadcastReceiver] on every campus entry/exit) and
+     * updates the Time In / Time Out card as new events come in.
+     */
+    private fun startTodayAttendanceListener(studentId: String) {
+        attendanceListener?.remove()
+
+        val startOfDay = java.util.Calendar.getInstance().apply {
+            set(java.util.Calendar.HOUR_OF_DAY, 0)
+            set(java.util.Calendar.MINUTE, 0)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+        }.time
+        val startTimestamp = com.google.firebase.Timestamp(startOfDay)
+
+        attendanceListener = db.collection("attendance")
+            .whereEqualTo("studentId", studentId)
+            .whereGreaterThanOrEqualTo("timestamp", startTimestamp)
+            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null || snapshot == null) return@addSnapshotListener
+
+                val timeFormat = java.text.SimpleDateFormat("h:mm a", java.util.Locale.getDefault())
+                var latestIn: String? = null
+                var latestOut: String? = null
+
+                for (doc in snapshot.documents) {
+                    val type = doc.getString("type")
+                    val ts = doc.getTimestamp("timestamp") ?: continue
+                    if (type == "IN" && latestIn == null) {
+                        latestIn = timeFormat.format(ts.toDate())
+                    } else if (type == "OUT" && latestOut == null) {
+                        latestOut = timeFormat.format(ts.toDate())
+                    }
+                    if (latestIn != null && latestOut != null) break
+                }
+
+                tvTimeInValue.text = latestIn ?: "--:--"
+                tvTimeOutValue.text = latestOut ?: "--:--"
             }
     }
 
@@ -307,6 +382,7 @@ class StudentActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         locationCallback?.let { fusedLocationClient.removeLocationUpdates(it) }
+        attendanceListener?.remove()
         // Hindi natin tinatanggal ang geofence dito - dapat tumuloy kahit closed ang activity
     }
 }
