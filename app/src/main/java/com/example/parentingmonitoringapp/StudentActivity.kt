@@ -79,12 +79,17 @@ class StudentActivity : AppCompatActivity() {
         tvStudentId = findViewById(R.id.tvStudentId)
         tvLocationStatus = findViewById(R.id.tvLocationStatus)
 
+        findViewById<android.widget.ImageView>(R.id.ivStudentAvatar).apply {
+            clipToCircle()
+            setOnClickListener { startActivity(Intent(this@StudentActivity, ProfileActivity::class.java)) }
+        }
+
         ivCampusStatusIcon = findViewById(R.id.ivCampusStatusIcon)
         tvCampusStatusLabel = findViewById(R.id.tvCampusStatusLabel)
         tvTimeInValue = findViewById(R.id.tvTimeInValue)
         tvTimeOutValue = findViewById(R.id.tvTimeOutValue)
 
-        setupCard(R.id.cardProfile) { openOwnRecord(MyChildActivity::class.java, "My Profile") }
+        setupCard(R.id.cardProfile) { startActivity(Intent(this, ProfileActivity::class.java)) }
         setupCard(R.id.cardAttendance) { openOwnRecord(StudentAttendanceDetailActivity::class.java) }
         setupCard(R.id.cardExamSchedule) { openOwnRecord(ParentExamScheduleActivity::class.java) }
         setupCard(R.id.cardGrades) { openOwnRecord(GradesActivity::class.java) }
@@ -132,6 +137,7 @@ class StudentActivity : AppCompatActivity() {
         db.collection("users").document(uid).get()
             .addOnSuccessListener { userDoc ->
                 val studentId = userDoc.getString("studentId")
+                findViewById<android.widget.ImageView>(R.id.ivStudentAvatar).loadAvatar(userDoc.getString("photoUrl"))
                 if (studentId.isNullOrEmpty()) {
                     tvStudentName.text = "Student"
                     tvStudentId.text = "No student record linked to this account."

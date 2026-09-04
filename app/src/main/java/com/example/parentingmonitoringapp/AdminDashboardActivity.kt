@@ -2,6 +2,7 @@ package com.example.parentingmonitoringapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -16,6 +17,7 @@ class AdminDashboardActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
 
+    private lateinit var ivAdminAvatar: ImageView
     private lateinit var tvAdminName: TextView
     private lateinit var tvWelcome: TextView
     private lateinit var tvTotalUsers: TextView
@@ -29,6 +31,11 @@ class AdminDashboardActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
+        ivAdminAvatar = findViewById(R.id.ivAdminAvatar)
+        ivAdminAvatar.clipToCircle()
+        ivAdminAvatar.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
         tvAdminName = findViewById(R.id.tvAdminName)
         tvWelcome = findViewById(R.id.tvWelcome)
         tvTotalUsers = findViewById(R.id.tvTotalUsers)
@@ -65,6 +72,7 @@ class AdminDashboardActivity : AppCompatActivity() {
                 val name = doc.getString("name")
                 tvAdminName.text = if (name.isNullOrBlank()) "Admin" else name
                 tvWelcome.text = "Welcome, ${if (name.isNullOrBlank()) "Admin" else name.substringBefore(" ")}!"
+                ivAdminAvatar.loadAvatar(doc.getString("photoUrl"))
 
                 loadSummaryStats()
             }
@@ -108,13 +116,13 @@ class AdminDashboardActivity : AppCompatActivity() {
 
     private fun bindModuleClicks() {
         findViewById<LinearLayout>(R.id.btnManageUsers).setOnClickListener {
-            comingSoon("Manage Users")
+            startActivity(Intent(this, ManageUsersActivity::class.java))
         }
         findViewById<LinearLayout>(R.id.btnManageStudents).setOnClickListener {
-            comingSoon("Manage Students")
+            startActivity(Intent(this, ManageUsersActivity::class.java))
         }
         findViewById<LinearLayout>(R.id.btnManageParents).setOnClickListener {
-            comingSoon("Manage Parents")
+            startActivity(Intent(this, ManageUsersActivity::class.java))
         }
         findViewById<LinearLayout>(R.id.btnAttendance).setOnClickListener {
             startActivity(Intent(this, AttendanceRecordsActivity::class.java))
@@ -132,7 +140,7 @@ class AdminDashboardActivity : AppCompatActivity() {
             comingSoon("Notifications")
         }
         findViewById<LinearLayout>(R.id.btnSettings).setOnClickListener {
-            comingSoon("Settings")
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
     }
 

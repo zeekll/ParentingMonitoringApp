@@ -209,9 +209,14 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     /**
-     * Writes the parent profile (role = parent) and the student's link back to
-     * that parent in a single atomic batch, so the two records can't end up
-     * out of sync (database integrity for the parent<->student link).
+     * Writes the parent profile (role = parent) first, then links the
+     * student back to that parent. This is intentionally two sequential
+     * writes rather than one atomic batch: the Firestore security rules for
+     * `students` need to read this parent's own `users/{uid}` doc to verify
+     * they're a "parent" before allowing the link update, and rules can't
+     * see a document created earlier in the same batch/transaction. Doing
+     * the parent-profile write first (and waiting for it to succeed) makes
+     * that check possible.
      */
     private fun linkParentToStudent(
         parentUid: String,
@@ -236,20 +241,24 @@ class RegisterActivity : AppCompatActivity() {
             "linkedAt" to FieldValue.serverTimestamp()
         )
 
-        db.runBatch { batch ->
-            batch.set(parentRef, parentData)
-            batch.update(studentRef, studentUpdate)
-        }
+        parentRef.set(parentData)
             .addOnSuccessListener {
-                setLoading(false)
-                showSuccess("Account created and linked successfully! Please verify your email, then log in.")
-                auth.signOut()
+                studentRef.update(studentUpdate)
+                    .addOnSuccessListener {
+                        setLoading(false)
+                        showSuccess("Account created and linked successfully! Please verify your email, then log in.")
+                        auth.signOut()
+                    }
+                    .addOnFailureListener {
+                        setLoading(false)
+                        // Account + profile exist but the DB link failed - surface this
+                        // clearly rather than leaving the person thinking it all succeeded.
+                        showError("Account was created but linking to the student failed. Please contact support.")
+                    }
             }
             .addOnFailureListener {
                 setLoading(false)
-                // Account exists in Auth but the DB link failed - surface this clearly
-                // rather than leaving the person thinking everything succeeded.
-                showError("Account was created but linking to the student failed. Please contact support.")
+                showError("Account was created but saving your profile failed. Please contact support.")
             }
     }
 }

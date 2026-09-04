@@ -4,8 +4,10 @@ import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -56,8 +58,8 @@ class AddUserActivity : AppCompatActivity() {
     private lateinit var etPassword: TextInputEditText
     private lateinit var etStudentId: TextInputEditText
     private lateinit var etStudentDob: TextInputEditText
-    private lateinit var etCourse: TextInputEditText
-    private lateinit var etSection: TextInputEditText
+    private lateinit var spinnerCourse: Spinner
+    private lateinit var spinnerSection: Spinner
     private lateinit var etLinkStudentId: TextInputEditText
 
     private lateinit var tvError: TextView
@@ -67,6 +69,9 @@ class AddUserActivity : AppCompatActivity() {
     private var selectedRole: String? = null
     private val dobFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
     private var selectedDob: String = ""
+
+    private val courseSectionsMap = mutableMapOf<String, List<String>>()
+    private val courseNames = mutableListOf<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,8 +94,8 @@ class AddUserActivity : AppCompatActivity() {
         etPassword = findViewById(R.id.etPassword)
         etStudentId = findViewById(R.id.etStudentId)
         etStudentDob = findViewById(R.id.etStudentDob)
-        etCourse = findViewById(R.id.etCourse)
-        etSection = findViewById(R.id.etSection)
+        spinnerCourse = findViewById(R.id.spinnerCourse)
+        spinnerSection = findViewById(R.id.spinnerSection)
         etLinkStudentId = findViewById(R.id.etLinkStudentId)
 
         tvError = findViewById(R.id.tvError)
@@ -98,6 +103,7 @@ class AddUserActivity : AppCompatActivity() {
         progressBar = findViewById(R.id.progressBar)
 
         etStudentDob.setOnClickListener { showDobPicker() }
+        loadCourses()
 
         cardRoleAdmin.setOnClickListener { selectRole("admin") }
         cardRoleParent.setOnClickListener { selectRole("parent") }
@@ -144,6 +150,49 @@ class AddUserActivity : AppCompatActivity() {
         )
         dialog.datePicker.maxDate = System.currentTimeMillis()
         dialog.show()
+    }
+
+    private fun loadCourses() {
+        db.collection("courses").get()
+            .addOnSuccessListener { docs ->
+                courseNames.clear()
+                courseSectionsMap.clear()
+
+                for (doc in docs) {
+                    val courseName = doc.getString("courseName") ?: doc.id
+
+                    val sectionsRaw = doc.get("sections")
+                    val sections: List<String> = when (sectionsRaw) {
+                        is List<*> -> sectionsRaw.mapNotNull { it?.toString()?.trim() }
+                        is String -> sectionsRaw.trim('[', ']').split(",").map { it.trim() }.filter { it.isNotEmpty() }
+                        else -> emptyList()
+                    }
+
+                    courseNames.add(courseName)
+                    courseSectionsMap[courseName] = sections
+                }
+
+                val courseAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, courseNames)
+                spinnerCourse.adapter = courseAdapter
+
+                updateSectionSpinner(courseNames.firstOrNull())
+
+                spinnerCourse.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        updateSectionSpinner(courseNames.getOrNull(position))
+                    }
+                    override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
+                }
+            }
+            .addOnFailureListener {
+                showError("Failed to load courses. Check your internet connection.")
+            }
+    }
+
+    private fun updateSectionSpinner(courseName: String?) {
+        val sections = courseSectionsMap[courseName] ?: emptyList()
+        val sectionAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, sections)
+        spinnerSection.adapter = sectionAdapter
     }
 
     private fun showError(message: String) {
@@ -269,8 +318,8 @@ class AddUserActivity : AppCompatActivity() {
     private fun attemptCreateStudent(fullName: String, email: String, password: String) {
         val studentId = etStudentId.text.toString().trim()
         val dob = selectedDob
-        val course = etCourse.text.toString().trim()
-        val section = etSection.text.toString().trim()
+        val course = spinnerCourse.selectedItem?.toString() ?: ""
+        val section = spinnerSection.selectedItem?.toString() ?: ""
 
         if (studentId.isEmpty()) {
             showError("Please enter a Student ID.")
@@ -278,6 +327,10 @@ class AddUserActivity : AppCompatActivity() {
         }
         if (dob.isEmpty()) {
             showError("Please select the student's Date of Birth.")
+            return
+        }
+        if (course.isEmpty() || section.isEmpty()) {
+            showError("Please select a course and section.")
             return
         }
 

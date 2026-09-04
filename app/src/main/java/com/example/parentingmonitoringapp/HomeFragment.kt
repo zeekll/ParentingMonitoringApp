@@ -58,6 +58,11 @@ class HomeFragment : Fragment() {
             openChildScreen(ParentNotificationsActivity::class.java)
         }
 
+        view.findViewById<ImageView>(R.id.ivParentAvatar).apply {
+            clipToCircle()
+            setOnClickListener { startActivity(Intent(requireContext(), ProfileActivity::class.java)) }
+        }
+
         view.findViewById<TextView>(R.id.btnLogout).setOnClickListener {
             auth.signOut()
             val intent = Intent(requireContext(), LoginActivity::class.java)
@@ -107,6 +112,7 @@ class HomeFragment : Fragment() {
                 if (!isAdded) return@addOnSuccessListener
                 val parentName = userDoc.getString("name") ?: "Parent"
                 tvParentName.text = parentName
+                view.findViewById<ImageView>(R.id.ivParentAvatar).loadAvatar(userDoc.getString("photoUrl"))
 
                 val linkedChildren = ChildLinkStore.getLinkedStudentIds(userDoc)
                 val studentId = ChildLinkStore.resolveSelectedStudentId(requireContext(), uid, userDoc)
