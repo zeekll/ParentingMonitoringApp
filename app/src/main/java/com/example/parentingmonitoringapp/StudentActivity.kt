@@ -8,26 +8,44 @@ import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
-import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
+import com.google.android.material.button.MaterialButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * Student Dashboard - main hub for a signed-in student.
+ * Shows the student's own name/ID and quick-access cards into their own
+ * Profile, Attendance, Exam Schedule, Grades and Notifications (all
+ * read-only, scoped to their own studentId only - see Firestore rules).
+ *
+ * Also owns the background location/geofence setup that was previously the
+ * sole purpose of this screen: tracking now starts automatically as soon as
+ * the dashboard loads, instead of requiring a separate button tap.
+ */
 class StudentActivity : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var geofencingClient: GeofencingClient
     private lateinit var tvLocationStatus: TextView
-    private lateinit var db: FirebaseFirestore
-    private lateinit var auth: FirebaseAuth
+
+    private lateinit var tvStudentName: TextView
+    private lateinit var tvStudentId: TextView
 
     private var locationCallback: LocationCallback? = null
     private var isTracking = false
+
+    // The signed-in student's own studentId/name, resolved from Firestore.
+    private var linkedStudentId: String? = null
+    private var linkedStudentName: String? = null
 
     private val FINE_LOCATION_REQUEST_CODE = 100
     private val BACKGROUND_LOCATION_REQUEST_CODE = 101
@@ -51,12 +69,80 @@ class StudentActivity : AppCompatActivity() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         geofencingClient = LocationServices.getGeofencingClient(this)
 
+        tvStudentName = findViewById(R.id.tvStudentName)
+        tvStudentId = findViewById(R.id.tvStudentId)
         tvLocationStatus = findViewById(R.id.tvLocationStatus)
-        val btnEnableTracking = findViewById<Button>(R.id.btnEnableTracking)
 
-        btnEnableTracking.setOnClickListener {
-            checkAndRequestPermissions()
+        setupCard(R.id.cardProfile) { openOwnRecord(MyChildActivity::class.java, "My Profile") }
+        setupCard(R.id.cardAttendance) { openOwnRecord(StudentAttendanceDetailActivity::class.java) }
+        setupCard(R.id.cardExamSchedule) { openOwnRecord(ParentExamScheduleActivity::class.java) }
+        setupCard(R.id.cardGrades) { openOwnRecord(GradesActivity::class.java) }
+        setupCard(R.id.cardNotifications) { openOwnRecord(ParentNotificationsActivity::class.java) }
+
+        findViewById<MaterialButton>(R.id.btnLogout).setOnClickListener {
+            auth.signOut()
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
         }
+
+        loadOwnStudentInfo()
+
+        // Tracking now starts automatically - no separate "Enable Tracking"
+        // tap required, matching the dashboard-first flow.
+        checkAndRequestPermissions()
+    }
+
+    private fun setupCard(cardId: Int, onClick: () -> Unit) {
+        findViewById<android.view.View>(cardId).setOnClickListener { onClick() }
+    }
+
+    /** Launches a read-only record screen scoped to this student's own data. */
+    private fun openOwnRecord(activityClass: Class<*>, screenTitle: String? = null) {
+        val studentId = linkedStudentId
+        if (studentId == null) {
+            Toast.makeText(this, "Still loading your student record. Please wait.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val intent = Intent(this, activityClass)
+        intent.putExtra("studentId", studentId)
+        intent.putExtra("studentName", linkedStudentName)
+        if (screenTitle != null) intent.putExtra("screenTitle", screenTitle)
+        startActivity(intent)
+    }
+
+    /**
+     * Resolves this signed-in student's own studentId from their users/{uid}
+     * profile (set up by an admin when the student account is created), then
+     * loads their name from the students collection for the header.
+     */
+    private fun loadOwnStudentInfo() {
+        val uid = auth.currentUser?.uid ?: return
+        db.collection("users").document(uid).get()
+            .addOnSuccessListener { userDoc ->
+                val studentId = userDoc.getString("studentId")
+                if (studentId.isNullOrEmpty()) {
+                    tvStudentName.text = "Student"
+                    tvStudentId.text = "No student record linked to this account."
+                    return@addOnSuccessListener
+                }
+                linkedStudentId = studentId
+                tvStudentId.text = "ID: $studentId"
+
+                db.collection("students").document(studentId).get()
+                    .addOnSuccessListener { studentDoc ->
+                        val name = studentDoc.getString("studentName") ?: studentId
+                        linkedStudentName = name
+                        tvStudentName.text = name
+                    }
+                    .addOnFailureListener {
+                        tvStudentName.text = studentId
+                    }
+            }
+            .addOnFailureListener {
+                tvStudentName.text = "Student"
+                tvStudentId.text = "Unable to load student info."
+            }
     }
 
     private fun checkAndRequestPermissions() {
@@ -107,6 +193,7 @@ class StudentActivity : AppCompatActivity() {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     checkBackgroundPermission()
                 } else {
+                    tvLocationStatus.text = "Location permission needed for attendance tracking."
                     Toast.makeText(this, "Kailangan ng location permission", Toast.LENGTH_LONG).show()
                 }
             }
@@ -117,7 +204,7 @@ class StudentActivity : AppCompatActivity() {
     }
 
     private fun onAllPermissionsGranted() {
-        tvLocationStatus.text = "Permissions granted. Setting up geofence..."
+        tvLocationStatus.text = "Permissions granted. Setting up geofence…"
         startLiveLocationDisplay()
         setupGeofence()
     }

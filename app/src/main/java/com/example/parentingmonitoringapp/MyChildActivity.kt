@@ -27,7 +27,7 @@ class MyChildActivity : AppCompatActivity() {
         tvTitle = findViewById(R.id.tvTitle)
         tvStatus = findViewById(R.id.tvStatus)
         container = findViewById(R.id.recordsContainer)
-        tvTitle.text = "My Child"
+        tvTitle.text = intent.getStringExtra("screenTitle") ?: "My Child"
 
         val studentId = intent.getStringExtra("studentId")
         if (studentId == null) {
